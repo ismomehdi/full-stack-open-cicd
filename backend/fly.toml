@@ -1,15 +1,19 @@
-# fly.toml app configuration file generated for backend-black-morning-8536 on 2025-03-25T19:39:07+02:00
+# fly.toml app configuration file generated for backend-lingering-sky-490 on 2025-03-25T20:18:00+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'backend-black-morning-8536'
+app = 'backend-lingering-sky-490'
 primary_region = 'arn'
 
 [build]
 
+
+[env]
+  PORT = "3001"
+
 [http_service]
-  internal_port = 3000
+  internal_port = 3001
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true

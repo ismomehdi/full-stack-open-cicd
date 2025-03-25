@@ -47,7 +47,8 @@ jobs:
         working-directory: ./frontend
         run: npm test
 
-      # Todo: e2e tests & deploy
+      # Deploy
+      # - name: Deploy
 
       # Notify
       - name: Discord notification on failure

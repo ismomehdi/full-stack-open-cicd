@@ -7,12 +7,11 @@ export default defineConfig([
   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
   { files: ["**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.browser } },
   { files: ["**/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"] },
-  { ignores: ["**/*.test.{js,mjs,cjs}"] },
+  { ignores: ["**/*.test.{js,mjs,cjs}", "dist/**"] },
   { languageOptions: {
     globals: {
       ...globals.browser,
       ...globals.node,
     },
-
   }}
 ]);

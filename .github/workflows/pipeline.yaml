@@ -1,0 +1,81 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Backend
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+        
+      - name: Run backend linter
+        working-directory: ./backend
+        run: npm run eslint
+        
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+
+      # Frontend  
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+        
+      - name: Check frontend style
+        working-directory: ./frontend
+        run: npm run eslint
+        
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        
+      - name: Run frontend unit tests
+        working-directory: ./frontend
+        run: npm test
+
+      # Todo: e2e tests & deploy
+
+      # Notify
+      - name: Discord notification on failure
+        uses: Ilshidur/action-discord@master
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          args: 'Pipeline Failed 😭'
+
+      - name: Discord notification on success
+        uses: Ilshidur/action-discord@master
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          args: 'All good 🥳'
+
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '#skip') }}
+        name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
